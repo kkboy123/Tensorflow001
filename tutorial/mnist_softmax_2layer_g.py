@@ -24,12 +24,12 @@ import tensorflow as tf
 
 
 def weight_variable(shape, name='None'):
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    initial = tf.truncated_normal(shape, stddev=0.1, name=name)
     return tf.Variable(initial)
 
 
 def bias_variable(shape, name='None'):
-    initial = tf.constant(0.1, shape=shape)
+    initial = tf.constant(0.1, shape=shape, name=name)
     return tf.Variable(initial,)
 
 
@@ -100,13 +100,13 @@ with tf.name_scope("test") as scope:
 W_conv1_hist = tf.histogram_summary("W_conv1_summary", W_conv1)
 b_conv1_hist = tf.histogram_summary("b_conv1_summary", b_conv1)
 h_conv1_img = list()
-for h1_i in tf.split(3, 32, h_conv1):
-    h_conv1_img.append(tf.image_summary("h_conv1_%s" % h1_i, h1_i))
+for _i, h1_i in enumerate(tf.split(3, 32, h_conv1)):
+    h_conv1_img.append(tf.image_summary("h_conv1_%s" % _i, h1_i))
 W_conv1_hist = tf.histogram_summary("W_conv2_summary", W_conv2)
 b_conv1_hist = tf.histogram_summary("b_conv2_summary", b_conv2)
 h_conv2_img = list()
-for h2_i in tf.split(3, 64, h_conv2):
-    h_conv2_img.append(tf.image_summary("h_conv2_%s" % h2_i, h2_i))
+for _i, h2_i in enumerate(tf.split(3, 64, h_conv2)):
+    h_conv2_img.append(tf.image_summary("h_conv2_%s" % _i, h2_i))
 W_fc1_hist = tf.histogram_summary("W_fc1_summary", W_fc1)
 b_fc1_hist = tf.histogram_summary("b_fc1_summary", b_fc1)
 W_fc2_hist = tf.histogram_summary("W_fc2_summary", W_fc2)
@@ -121,7 +121,10 @@ init = tf.initialize_all_variables()
 # Launch the graph
 sess.run(init)
 
-for i in range(5000):
+# Add ops to save and restore all the variables.
+saver = tf.train.Saver()
+
+for i in range(20000):
     batch = mnist.train.next_batch(50)
     if i % 100 == 0:
         feed = {x: batch[0], y_: batch[1], keep_prob: 1.0}
@@ -134,5 +137,9 @@ for i in range(5000):
         print("Accuracy at step %s: %s" % (i, acc))
     train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
+# Print the final accuracy
 print ("test accuracy %g" % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+# Save the variables to disk.
+save_path = saver.save(sess, "/tmp/mnist_conv_logs/model.ckpt")
+print("Model saved in file: %s" % save_path)
 sess.close()
