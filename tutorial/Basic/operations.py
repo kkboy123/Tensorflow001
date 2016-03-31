@@ -23,9 +23,9 @@ with tf.Session() as sess:
     print sess.run(mul, feed_dict={a: 5, b: 2})
     print "run matmul1 operation"
 
-    '''  a is a 2x1 matrix
+    '''  a is a 1x2 matrix
          a : [[3.0, 3.0]]
-         b is a 1x2 matrix
+         b is a 2x1 matrix
          b : [[2.0],
               [2.0]]
     '''

@@ -77,7 +77,7 @@ with tf.name_scope("dropout") as scope:
     h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
 # readout layer
-with tf.name_scope("sftmax") as scope:
+with tf.name_scope("softmax") as scope:
     W_fc2 = weight_variable([1024, 10], name='W_fc2')
     b_fc2 = bias_variable([10], name='b_fc2')
     y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
