@@ -52,9 +52,8 @@ loss = -tf.reduce_sum(y_ * tf.log(y))
 different training method
 https://www.tensorflow.org/versions/r0.7/api_docs/python/train.html#optimizers
 '''
-
-train_step = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
-# train_step = tf.train.AdamOptimizer(0.01).minimize(loss)
+# train_step = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
+train_step = tf.train.AdamOptimizer(0.01).minimize(loss)
 # train_step = tf.train.MomentumOptimizer(0.01,0.01).minimize(loss)
 
 tf.initialize_all_variables().run()
@@ -93,7 +92,6 @@ try different loss function and optimizer
 
 Exercise 2
 add another layer
-<<<<<<< HEAD
 '''
 
 
@@ -102,6 +100,3 @@ add another layer
 
 
 
-=======
-'''
->>>>>>> origin/master

@@ -51,7 +51,6 @@ To run:
 
 $ python ptb_word_lm.py --data_path=simple-examples/data/
 
-https://github.com/heri/tensorflow-RNN/blob/master/ptb_word_lm.py
 """
 from __future__ import absolute_import
 from __future__ import division

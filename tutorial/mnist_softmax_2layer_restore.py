@@ -77,22 +77,54 @@ with tf.name_scope("dropout") as scope:
     h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
 # readout layer
-with tf.name_scope("softmax") as scope:
+with tf.name_scope("sftmax") as scope:
     W_fc2 = weight_variable([1024, 10], name='W_fc2')
     b_fc2 = bias_variable([10], name='b_fc2')
     y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+
+
+# Define loss and optimizer
+with tf.name_scope("xent") as scope:
+    cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
+    ce_summ = tf.scalar_summary("cross entropy", cross_entropy)
+with tf.name_scope("train") as scope:
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
 # Train and test the model
 with tf.name_scope("test") as scope:
     correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-    # accuracy_summary = tf.scalar_summary("accuracy", accuracy)
+    accuracy_summary = tf.scalar_summary("accuracy", accuracy)
 
+# Add summary ops to collect data
+W_conv1_hist = tf.histogram_summary("W_conv1_summary", W_conv1)
+b_conv1_hist = tf.histogram_summary("b_conv1_summary", b_conv1)
+h_conv1_img = list()
+for _i, h1_i in enumerate(tf.split(3, 32, h_conv1)):
+    h_conv1_img.append(tf.image_summary("h_conv1_%s" % _i, h1_i))
+W_conv1_hist = tf.histogram_summary("W_conv2_summary", W_conv2)
+b_conv1_hist = tf.histogram_summary("b_conv2_summary", b_conv2)
+h_conv2_img = list()
+for _i, h2_i in enumerate(tf.split(3, 64, h_conv2)):
+    h_conv2_img.append(tf.image_summary("h_conv2_%s" % _i, h2_i))
+W_fc1_hist = tf.histogram_summary("W_fc1_summary", W_fc1)
+b_fc1_hist = tf.histogram_summary("b_fc1_summary", b_fc1)
+W_fc2_hist = tf.histogram_summary("W_fc2_summary", W_fc2)
+b_fc2_hist = tf.histogram_summary("b_fc2_summary", b_fc2)
+
+
+# Merge all the summaries and write them out to /tmp/mnist_conv_logs
+merged = tf.merge_all_summaries()
+writer = tf.train.SummaryWriter("/tmp/mnist_conv_logs", sess.graph_def)
+init = tf.initialize_all_variables()
+
+# Launch the graph
+sess.run(init)
 
 # Add ops to save and restore all the variables.
 saver = tf.train.Saver()
 # Restore variables from disk
-saver.restore(sess, "/tmp/mnist_conv_logs/model.ckpt")
+saver.restore(sess, "/Users/will/HelloPycharm/tutorial/export/mnist_conv_logs/model.ckpt")
 # Print the final accuracy
 print ("test accuracy %g" % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 sess.close()

@@ -124,8 +124,9 @@ sess.run(init)
 # Add ops to save and restore all the variables.
 saver = tf.train.Saver()
 
-for i in range(20000):
-    batch = mnist.train.next_batch(50)
+for i in range(6000):
+    # batch = mnist.train.next_batch(50)
+    batch = mnist.test.next_batch(50)
     if i % 100 == 0:
         feed = {x: batch[0], y_: batch[1], keep_prob: 1.0}
         # train_accuracy = accuracy.eval(feed_dict=feed)
@@ -138,7 +139,11 @@ for i in range(20000):
     train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
 # Print the final accuracy
-print ("test accuracy %g" % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+# print ("test accuracy %g" % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+for i in range(5):
+    start = i * 10000
+    end = (i + 1) * 10000
+    print ("test accuracy %g" % accuracy.eval(feed_dict={x: mnist.train.images[start:end], y_: mnist.train.labels[start:end], keep_prob: 1.0}))
 # Save the variables to disk.
 save_path = saver.save(sess, "/tmp/mnist_conv_logs/model.ckpt")
 print("Model saved in file: %s" % save_path)

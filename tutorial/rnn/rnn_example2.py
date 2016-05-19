@@ -9,7 +9,7 @@ from tensorflow.models.rnn import rnn
 ''' Defining some hyper-params'''
 # this is the parameter for input_size in the basic LSTM cell
 num_units = n_hidden = 40
-# num_units and n_hidden will be the same
+# num_units and input_size will be the same
 input_size = n_input = 2
 batch_size = 10
 seq_len = n_steps = 5
